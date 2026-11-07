@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0f1b4d">
+<title>LinguaFlow</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+:root{--n:#0f1b4d;--n2:#1f3080;--v:#7c5cff;--v2:#efeaff;--bg:#f4f6fc;--t:#18203f;--m:#6b7394;--ok:#1fa971;--no:#e5484d}
+*{box-sizing:border-box;margin:0;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--t);min-height:100vh;padding-bottom:90px}
+button,input{font:inherit}
+.hero{background:linear-gradient(135deg,var(--n),var(--n2) 70%,#4a3bb0);color:#fff;padding:22px 18px 28px;border-radius:0 0 28px 28px}
+.hero h1{font-size:22px}.hero p{opacity:.75;font-size:14px;margin-top:2px}
+.wrap{padding:16px;animation:up .35s ease}
+@keyframes up{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.card{background:#fff;border-radius:18px;padding:16px;margin-bottom:12px;box-shadow:0 4px 18px rgba(15,27,77,.07)}
+.card h3{font-size:16px;margin-bottom:6px}.m{color:var(--m);font-size:13px;line-height:1.5}
+.btn{display:block;width:100%;border:0;border-radius:14px;padding:14px;background:var(--v);color:#fff;font-weight:600;margin-top:10px;cursor:pointer;transition:transform .15s}
+.btn:active{transform:scale(.97)}.btn.g{background:var(--v2);color:var(--v)}.btn.r{background:#fdecec;color:var(--no)}
+.row{display:flex;gap:10px}.row>*{flex:1}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:12px 0 2px}
+.chip{border:0;padding:8px 16px;border-radius:20px;background:rgba(255,255,255,.15);color:#fff;font-weight:600;cursor:pointer}
+.chip.on{background:#fff;color:var(--n)}
+.bar{height:8px;background:rgba(255,255,255,.2);border-radius:8px;overflow:hidden;margin-top:12px}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,#a894ff,#fff);border-radius:8px;transition:width .6s}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:-18px 16px 4px}
+.stat{background:#fff;border-radius:16px;padding:12px;text-align:center;box-shadow:0 4px 18px rgba(15,27,77,.1)}
+.stat b{font-size:20px;display:block}.stat span{font-size:11px;color:var(--m)}
+.tile{display:flex;gap:12px;align-items:center;cursor:pointer}
+.ic{width:46px;height:46px;border-radius:14px;background:var(--v2);display:grid;place-items:center;font-size:22px;flex:none}
+.flash{min-height:200px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;cursor:pointer;background:linear-gradient(135deg,#fff,var(--v2))}
+.flash b{font-size:30px;color:var(--n)}
+.opt{display:block;width:100%;text-align:left;border:2px solid #e3e7f5;background:#fff;border-radius:14px;padding:13px;margin-top:9px;cursor:pointer;color:var(--t)}
+.opt.ok{border-color:var(--ok);background:#e8f8f1}.opt.no{border-color:var(--no);background:#fdecec}
+.pass{background:var(--v2);border-radius:14px;padding:14px;line-height:1.6;font-size:15px;margin-bottom:12px}
+.nav{position:fixed;bottom:0;left:0;right:0;display:flex;background:#fff;border-top:1px solid #e3e7f5;padding:6px 4px calc(6px + env(safe-area-inset-bottom))}
+.nav button{flex:1;border:0;background:none;color:var(--m);font-size:11px;padding:6px 0;cursor:pointer}
+.nav button span{display:block;font-size:20px}.nav button.on{color:var(--v);font-weight:700}
+.msg{padding:10px 13px;border-radius:14px;margin:8px 0;max-width:85%;font-size:14px;line-height:1.5}
+.msg.u{background:var(--v);color:#fff;margin-left:auto}.msg.a{background:#fff}.msg.s{background:#fff6e0;color:#7a5a00;max-width:100%}
+input.in{width:100%;border:2px solid #e3e7f5;border-radius:14px;padding:12px;margin-top:8px;outline:0}input.in:focus{border-color:var(--v)}
+.tag{display:inline-block;background:#fff0c2;color:#7a5a00;border-radius:8px;padding:3px 8px;font-size:11px;font-weight:700;margin-bottom:8px}
+.ach{display:flex;gap:12px;align-items:center;padding:8px 0}.ach.lock{opacity:.4;filter:grayscale(1)}
+.center{text-align:center;padding:40px 20px}.big{font-size:54px}
+.spin{width:38px;height:38px;border:4px solid var(--v2);border-top-color:var(--v);border-radius:50%;animation:s 1s linear infinite;margin:0 auto 12px}
+@keyframes s{to{transform:rotate(360deg)}}
+#toast{position:fixed;top:14px;left:50%;transform:translate(-50%,-90px);background:var(--n);color:#fff;padding:12px 18px;border-radius:14px;transition:transform .4s;z-index:9;font-size:14px}
+#toast.show{transform:translate(-50%,0)}
+.warn{background:#fff6e0;color:#7a5a00;padding:10px 14px;font-size:13px}
+</style>
+</head>
+<body>
+<div id="toast"></div>
+<div id="app"><div class="center" style="padding-top:35vh"><div class="spin"></div><div class="m">Loading LinguaFlow…</div></div></div>
+<script>
+/* ====== AI TUTOR INTEGRATION PLACEHOLDER ======
+   Put the address of YOUR OWN backend here (never put secret API keys in this file).
+   Expected: POST {message, level}  ->  JSON {reply:"..."} */
+const AI_ENDPOINT = "";
+
+const tg = window.Telegram && Telegram.WebApp;
+try { tg && (tg.ready(), tg.expand(), tg.setHeaderColor && tg.setHeaderColor("#0f1b4d")); } catch (e) {}
+const K = "linguaflow_v1", LV = ["A1","A2","B1","B2","C1","C2"];
+const DEF = {lv:"A1",xp:0,streak:0,last:"",known:{},done:{},ach:[],hist:[],st:{c:0,qa:0,qc:0,qz:0,g:0,r:0,s:0}};
+
+const D = {
+A1:{v:[["breakfast","the first meal of the day","I eat breakfast at 7 o'clock."],["neighbor","a person who lives near you","My neighbor is very kind."],["market","a place where people buy food","We buy fruit at the market."],["happy","feeling good and glad","She is happy today."],["library","a place with many books","I read books in the library."],["weekend","Saturday and Sunday","On the weekend I visit my friends."]],
+g:{t:"The verb 'to be'",x:"Use <b>am</b> with I, <b>is</b> with he/she/it, and <b>are</b> with you/we/they. Example: I am a student. She is happy. They are friends.",q:[["She ___ a teacher.",["am","is","are"],1],["We ___ students.",["is","am","are"],2],["I ___ from Spain.",["am","is","are"],0]]},
+r:{t:"Tom's Day",p:"Tom lives in a small house with his sister Anna. Every morning, Tom drinks tea and eats bread. Then he walks to school. After school, he plays football with his friends. In the evening, Tom and Anna watch TV.",q:[["Who does Tom live with?",["His sister","His mother","His friend"],0],["What does Tom drink?",["Milk","Tea","Juice"],1],["How does Tom go to school?",["By bus","By car","On foot"],2],["What does he play after school?",["Football","Tennis","Chess"],0],["What do Tom and Anna do in the evening?",["Read books","Watch TV","Cook dinner"],1]]}},
+A2:{v:[["borrow","to take something and give it back later","Can I borrow your pen?"],["journey","a trip from one place to another","The journey to Paris took four hours."],["receive","to get something","I received a letter yesterday."],["comfortable","pleasant to wear, sit in, or use","This sofa is very comfortable."],["invite","to ask someone to come to an event","She invited us to her party."],["quickly","in a short time; fast","He finished his homework quickly."]],
+g:{t:"Past simple",x:"Regular verbs add <b>-ed</b> (watch → watched). Many common verbs are irregular: go → went, eat → ate, see → saw.",q:[["Yesterday I ___ to school.",["go","went","goed"],1],["She ___ a movie last night.",["watched","watch","watching"],0],["They ___ pizza on Sunday.",["eat","eaten","ate"],2]]},
+r:{t:"Summer by the Lake",p:"Last summer, Maria visited her grandmother in a small village. The village had one shop and a beautiful lake. Every day they fished at the lake and cooked the fish for dinner. Maria loved the quiet life, but she missed her friends. She promised to return next year.",q:[["Where did Maria go?",["A big city","A village","The sea"],1],["What was near the village?",["A lake","A mountain","A factory"],0],["What did they do every day?",["Swim","Shop","Fish"],2],["How did Maria feel about quiet life?",["She loved it","She hated it","She was afraid"],0],["What did she promise?",["To call daily","To return next year","To move there"],1]]}},
+B1:{v:[["achieve","to succeed in doing something","She worked hard to achieve her goal."],["experience","knowledge gained from doing something","He has five years of experience."],["environment","the natural world around us","We must protect the environment."],["opportunity","a chance to do something good","This job is a great opportunity."],["suggest","to offer an idea or plan","I suggest taking the early train."],["improve","to become or make better","Reading daily will improve your English."]],
+g:{t:"Present perfect",x:"Use <b>have/has + past participle</b> for life experiences or actions connected to now: I have visited Rome. She has lived here since 2020.",q:[["I ___ never been to Italy.",["have","has","had"],0],["She ___ lived here since 2020.",["have","has","is"],1],["We have ___ that film twice.",["see","saw","seen"],2]]},
+r:{t:"Green Cities",p:"Many cities are creating more green spaces to improve life for residents. Parks reduce heat in summer, clean the air and give people a place to relax. A recent study suggested that people who walk in nature feel less stressed. However, building parks can be expensive, and some cities have little free land. As a result, planners now use roofs and walls for gardens.",q:[["Why are cities creating green spaces?",["To improve residents' lives","To build roads","To attract factories"],0],["Which is a benefit of parks?",["More noise","Less heat in summer","Higher prices"],1],["What did the study suggest?",["Parks are too costly","People prefer cities","Nature walks reduce stress"],2],["What is one problem?",["Cost and lack of land","Too many visitors","Dirty air"],0],["Where do planners now put gardens?",["Underground","On roofs and walls","On highways"],1]]}},
+B2:{v:[["reliable","able to be trusted","He is a reliable colleague."],["deadline","the latest time to finish a task","The deadline is Friday at noon."],["overcome","to succeed in dealing with a problem","She overcame her fear of speaking."],["considerable","fairly large in amount","The project needs considerable effort."],["conflict","a serious disagreement","They resolved the conflict calmly."],["adapt","to change to fit a new situation","Children adapt quickly to new schools."]],
+g:{t:"Second conditional",x:"Talk about unreal or unlikely situations: <b>If + past simple, would + verb</b>. If I were rich, I would travel. (Use <i>were</i> for all persons in formal English.)",q:[["If I ___ rich, I would travel.",["am","were","will be"],1],["If she studied more, she ___ pass.",["will","would","did"],1],["What ___ you do if you lost your keys?",["would","will","did"],0]]},
+r:{t:"The Remote Work Debate",p:"Remote work has changed how companies think about productivity. Supporters argue that employees save commuting time and can concentrate better at home. Critics, however, worry that teams lose spontaneous conversation, which often sparks new ideas. Some firms have adopted a hybrid model, requiring staff in the office two or three days a week. Early evidence suggests that this compromise keeps most workers satisfied, although managers still struggle to measure results fairly.",q:[["What do supporters say about home working?",["It saves commuting time","It costs more","It reduces ideas"],0],["What do critics fear?",["Longer commutes","Loss of spontaneous talk","Lower salaries"],1],["What is a hybrid model?",["Only home work","Only office work","Some days in the office"],2],["What does early evidence suggest?",["Most workers are satisfied","Workers dislike it","Productivity collapsed"],0],["What do managers find difficult?",["Hiring staff","Measuring results fairly","Finding offices"],1]]}},
+C1:{v:[["meticulous","very careful about details","She is meticulous about her research."],["alleviate","to make a problem less severe","The new law will alleviate poverty."],["ambiguous","having more than one possible meaning","The contract wording was ambiguous."],["resilient","able to recover quickly from difficulty","Resilient teams adapt to setbacks."],["scrutinize","to examine very carefully","Auditors scrutinize every transaction."],["foster","to encourage the development of something","Good teachers foster curiosity."]],
+g:{t:"Negative inversion",x:"For emphasis, put an auxiliary verb before the subject after negative adverbs: <b>Never have I seen</b> such talent. <b>Not only was he late</b>, but he was rude.",q:[["Rarely ___ such talent.",["we see","do we see","we do see"],1],["Not only ___ late, but also rude.",["he was","he is","was he"],2],["Hardly ___ arrived when it began to rain.",["she had","had she","has she"],1]]},
+r:{t:"Digital Minimalism",p:"The concept of 'digital minimalism' has gained traction among those overwhelmed by constant notifications. Rather than rejecting technology outright, its advocates propose deliberately choosing tools that serve clearly defined values, and discarding the rest. Critics contend that such a philosophy is a luxury, available mainly to those whose livelihoods do not depend on being permanently connected. Nevertheless, even modest experiments, such as a weekly offline day, reportedly restore concentration.",q:[["Does digital minimalism reject all technology?",["Yes, completely","No, it is selective","Only phones"],1],["How are tools chosen?",["By price","By popularity","By how well they serve values"],2],["What is the critics' main objection?",["It is a luxury","It is dangerous","It is too old"],0],["Which example of a modest experiment is given?",["A weekly offline day","Deleting all apps","Selling a phone"],0],["What do such experiments reportedly improve?",["Income","Concentration","Sleep"],1]]}},
+C2:{v:[["ephemeral","lasting a very short time","Fame can be ephemeral."],["pragmatic","dealing with things in a practical way","A pragmatic approach solved the issue."],["equivocal","deliberately unclear or open to doubt","His equivocal answer satisfied nobody."],["ubiquitous","seeming to be everywhere","Smartphones have become ubiquitous."],["juxtapose","to place things side by side to contrast them","The film juxtaposes wealth and poverty."],["tenuous","very weak or slight","The link between the two events is tenuous."]],
+g:{t:"The mandative subjunctive",x:"After verbs and adjectives of demand or advice (insist, suggest, essential), use the <b>base form</b> of the verb, with no -s: It is essential that every student <b>arrive</b> on time. I insist that she <b>be</b> present.",q:[["It is essential that every student ___ on time.",["arrives","arrive","arrived"],1],["I insist that she ___ present.",["is","was","be"],2],["The doctor recommended that he ___ rest.",["take","takes","took"],0]]},
+r:{t:"Against Inevitability",p:"Historians increasingly caution against narratives of inevitable progress. The assumption that each generation inherits a wiser world sits uneasily beside evidence of repeated, avoidable catastrophes. Yet wholesale pessimism is equally untenable: it ignores genuine, hard-won gains in public health and literacy. The more defensible position is a chastened optimism, one that treats improvement as contingent on sustained collective effort rather than as a natural law.",q:[["What do historians caution against?",["Studying the past","Stories of inevitable progress","Public health"],1],["Why is wholesale pessimism untenable?",["It ignores real gains","It is too cheerful","It is new"],0],["What does 'chastened optimism' suggest?",["Blind confidence","Hope tempered by caution","Total despair"],1],["Improvement is described as…",["A natural law","Accidental","Dependent on collective effort"],2],["The overall tone is…",["Mocking","Measured and balanced","Angry"],1]]}}};
+
+const ACH = [
+["🌱","First Steps","Earn your first XP",s=>s.xp>=10],
+["⚡","Rising Star","Reach 100 XP",s=>s.xp>=100],
+["🏆","Scholar","Reach 500 XP",s=>s.xp>=500],
+["🔥","On Fire","3-day streak",s=>s.streak>=3],
+["🃏","Word Collector","Know 10 words",s=>Object.keys(s.known).length>=10],
+["📐","Grammar Pro","Finish a grammar lesson",s=>s.st.g>=1],
+["📖","Bookworm","Finish a reading passage",s=>s.st.r>=1],
+["🎤","Speaker","Complete a speaking check",s=>s.st.s>=1],
+["💯","Perfectionist","Score 100% in any exercise",s=>s.perf]];
+
+let S = load(), V = "home", Q = null, F = {i:0,f:false}, SP = null, T = [], busy = false, err = null, GL = false;
+function load(){try{return Object.assign({},DEF,JSON.parse(localStorage.getItem(K)||"{}"))}catch(e){err="Storage is unavailable here, so progress will not be saved.";return JSON.parse(JSON.stringify(DEF))}}
+function save(){try{localStorage.setItem(K,JSON.stringify(S))}catch(e){err="Could not save progress."}}
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const shuf = a => a.map(x=>[Math.random(),x]).sort((p,q)=>p[0]-q[0]).map(x=>x[1]);
+const day = d => (d||new Date()).toISOString().slice(0,10);
+function toast(m){const t=$("toast");t.textContent=m;t.className="show";setTimeout(()=>t.className="",2600)}
+function buzz(t){try{tg&&tg.HapticFeedback&&tg.HapticFeedback.notificationOccurred(t)}catch(e){}}
+function touch(){const t=day();if(S.last===t)return;const y=new Date();y.setDate(y.getDate()-1);S.streak=S.last===day(y)?S.streak+1:1;S.last=t}
+function xp(n){S.xp+=n;touch();checkAch();save()}
+function checkAch(){ACH.forEach((a,i)=>{if(!S.ach.includes(i)&&a[3](S)){S.ach.push(i);toast("🏅 "+a[1]+" unlocked!");buzz("success")}})}
+function lvlInfo(){return{n:Math.floor(S.xp/100)+1,p:S.xp%100}}
+function go(v){V=v;if(v==="learn"){GL=false}window.scrollTo(0,0);render()}
+function setLv(l){S.lv=l;save();render()}
+
+/* ---------- Views ---------- */
+function chips(){return `<div class="chips">${LV.map(l=>`<button class="chip ${l===S.lv?"on":""}" onclick="setLv('${l}')">${l}</button>`).join("")}</div>`}
+function home(){
+const u=tg&&tg.initDataUnsafe&&tg.initDataUnsafe.user,n=u?esc(u.first_name):"Learner",li=lvlInfo();
+return `<div class="hero"><h1>Hello, ${n} 👋</h1><p>Level ${li.n} · ${li.p}/100 XP to next level</p><div class="bar"><i style="width:${li.p}%"></i></div>${chips()}</div>
+<div class="stats"><div class="stat"><b>🔥 ${S.streak}</b><span>Day streak</span></div><div class="stat"><b>⭐ ${S.xp}</b><span>Total XP</span></div><div class="stat"><b>🃏 ${Object.keys(S.known).length}</b><span>Words known</span></div></div>
+<div class="wrap"><div class="card"><h3>Continue learning · ${S.lv}</h3><p class="m">Pick up where you left off, or try something new.</p>
+<div class="row"><button class="btn" onclick="startCards()">Flashcards</button><button class="btn g" onclick="go('learn')">All lessons</button></div></div>
+<div class="card"><h3>Recent activity</h3>${S.hist.length?S.hist.slice(0,4).map(h=>`<div class="ach"><div class="ic">✅</div><div><b>${esc(h.t)}</b><div class="m">${esc(h.s)} · ${h.d}</div></div></div>`).join(""):`<p class="m">No activity yet. Complete your first lesson to see it here!</p>`}</div></div>`}
+function learn(){const d=S.done,l=S.lv;
+const t=(i,a,b,f)=>`<div class="card tile" onclick="${f}"><div class="ic">${i}</div><div><h3>${a}</h3><div class="m">${b}</div></div></div>`;
+return `<div class="hero"><h1>Learn</h1><p>Choose a lesson type</p>${chips()}</div><div class="wrap">
+${t("🃏","Vocabulary flashcards","6 words · tap to flip","startCards()")}
+${t("❓","Vocabulary quiz","Test your word knowledge","startQuiz()")}
+${t("📐",(d[l+"g"]?"✅ ":"")+D[l].g.t,"Grammar lesson + 3 exercises","startGrammar()")}
+${t("📖",(d[l+"r"]?"✅ ":"")+D[l].r.t,"Reading · 5 questions","startReading()")}</div>`}
+function cards(){const w=D[S.lv].v;
+if(F.i>=w.length)return `<div class="wrap center"><div class="big">🎉</div><h2>Deck complete!</h2><p class="m" style="margin:8px 0">You've reviewed all ${S.lv} words.</p><button class="btn" onclick="startQuiz()">Take the quiz</button><button class="btn g" onclick="go('learn')">Back</button></div>`;
+const c=w[F.i];
+return `<div class="hero"><h1>Flashcards · ${S.lv}</h1><p>Card ${F.i+1} of ${w.length}</p><div class="bar"><i style="width:${F.i/w.length*100}%"></i></div></div><div class="wrap">
+<div class="card flash" onclick="F.f=!F.f;render()">${F.f?`<p style="font-size:18px">${esc(c[1])}</p><p class="m" style="margin-top:12px"><i>${esc(c[2])}</i></p>`:`<b>${esc(c[0])}</b><p class="m" style="margin-top:10px">Tap to reveal meaning</p>`}</div>
+<div class="row"><button class="btn r" onclick="know(0)">Still learning</button><button class="btn" onclick="know(1)">I know it</button></div>
+<button class="btn g" onclick="go('learn')">Exit</button></div>`}
+function runner(){const it=Q.items[Q.i];
+return `<div class="hero"><h1>${esc(Q.title)}</h1><p>Question ${Q.i+1} of ${Q.items.length}</p><div class="bar"><i style="width:${Q.i/Q.items.length*100}%"></i></div></div><div class="wrap">
+${Q.ctx?`<div class="pass">${esc(Q.ctx)}</div>`:""}
+<div class="card"><h3>${esc(it[0])}</h3>${it[1].map((o,i)=>{let c="";if(Q.sel!==null){if(i===it[2])c="ok";else if(i===Q.sel)c="no"}return `<button class="opt ${c}" onclick="pick(${i})">${esc(o)}</button>`}).join("")}
+${Q.sel!==null?`<p class="m" style="margin-top:10px">${Q.sel===it[2]?"✅ Correct! +10 XP":"❌ Not quite. Correct answer: "+esc(it[1][it[2]])}</p><button class="btn" onclick="nextQ()">${Q.i+1<Q.items.length?"Next":"Finish"}</button>`:""}</div>
+<button class="btn g" onclick="go('learn')">Quit</button></div>`}
+function result(){const n=Q.items.length,p=Math.round(Q.sc/n*100);
+return `<div class="wrap center"><div class="big">${p===100?"🏆":p>=60?"🎉":"💪"}</div><h2>${Q.sc} / ${n} correct</h2><p class="m" style="margin:8px 0">${p}% · ${p===100?"Perfect! +20 bonus XP":p>=60?"Great job!":"Review and try again!"}</p><button class="btn" onclick="go('learn')">Continue</button><button class="btn g" onclick="go('home')">Home</button></div>`}
+function lesson(){const g=D[S.lv].g;
+return `<div class="hero"><h1>${esc(g.t)}</h1><p>Grammar · ${S.lv}</p></div><div class="wrap"><div class="card"><h3>Explanation</h3><p style="line-height:1.7;margin-top:6px">${g.x}</p></div><button class="btn" onclick="run('g','Grammar: '+D[S.lv].g.t,D[S.lv].g.q)">Start exercises</button><button class="btn g" onclick="go('learn')">Back</button></div>`}
+function tutor(){
+return `<div class="hero"><h1>AI Tutor</h1><p>Practice English with a conversation partner</p></div><div class="wrap">
+${AI_ENDPOINT?"":`<div class="card"><span class="tag">INTEGRATION PLACEHOLDER</span><p class="m">The AI Tutor is <b>not connected</b>. Open index.html, find <code>AI_ENDPOINT</code> at the top of the script and add the address of your own backend service. No AI replies are simulated.</p></div>`}
+${T.length?T.map(m=>`<div class="msg ${m.r}">${esc(m.m)}</div>`).join(""):`<div class="center"><div class="big">💬</div><p class="m">No messages yet. Ask a question below.</p></div>`}
+${busy?`<div class="msg a"><div class="spin" style="width:22px;height:22px;border-width:3px;margin:0"></div></div>`:""}
+<input class="in" id="ti" placeholder="Type your message…" onkeydown="if(event.key==='Enter')sendTutor()"><button class="btn" onclick="sendTutor()">Send</button></div>`}
+function speak(){if(!SP)newSpeak(true);
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+return `<div class="hero"><h1>Speaking practice</h1><p>Say the sentence, or type it</p>${chips()}</div><div class="wrap">
+<div class="card"><h3>Read this aloud</h3><p style="font-size:19px;line-height:1.5;margin:10px 0">${esc(SP.text)}</p>
+<div class="row"><button class="btn g" onclick="listen()">🔊 Listen</button>${SR?`<button class="btn g" onclick="rec()">🎙 Record</button>`:""}</div>
+${SR?"":`<p class="m" style="margin-top:8px">Voice recognition isn't available in this browser. Use the text box instead.</p>`}
+<input class="in" id="si" placeholder="Type what you said…"><button class="btn" onclick="checkSpeak()">Check</button></div>
+${SP.res?`<div class="card"><h3>${SP.res.p>=70?"✅":"🔁"} ${SP.res.p}% match</h3><p class="m">${SP.res.miss.length?"Missing words: "+esc(SP.res.miss.join(", ")):"All words matched!"}</p></div>`:""}
+<button class="btn g" onclick="newSpeak()">Next sentence</button></div>`}
+function profile(){const u=tg&&tg.initDataUnsafe&&tg.initDataUnsafe.user,n=u?esc((u.first_name||"")+" "+(u.last_name||"")):"Learner",li=lvlInfo(),st=S.st,acc=st.qa?Math.round(st.qc/st.qa*100):0;
+return `<div class="hero"><h1>${n}</h1><p>Level ${li.n} · CEFR ${S.lv}</p></div><div class="wrap">
+<div class="card"><h3>Statistics</h3><div class="row" style="flex-wrap:wrap;margin-top:8px">${[["⭐",S.xp,"Total XP"],["🔥",S.streak,"Streak"],["🃏",st.c,"Cards known"],["🎯",acc+"%","Accuracy"],["📐",st.g,"Grammar"],["📖",st.r,"Readings"],["❓",st.qz,"Quizzes"],["🎤",st.s,"Speaking"]].map(x=>`<div class="stat" style="flex:1 1 40%;box-shadow:none;background:var(--bg)"><b>${x[0]} ${x[1]}</b><span>${x[2]}</span></div>`).join("")}</div></div>
+<div class="card"><h3>Achievements (${S.ach.length}/${ACH.length})</h3>${ACH.map((a,i)=>`<div class="ach ${S.ach.includes(i)?"":"lock"}"><div class="ic">${a[0]}</div><div><b>${a[1]}</b><div class="m">${a[2]}</div></div></div>`).join("")}</div>
+<button class="btn r" onclick="resetAll()">Reset all progress</button></div>`}
+
+/* ---------- Actions ---------- */
+function startCards(){F={i:0,f:false};V="cards";render()}
+function know(k){const c=D[S.lv].v[F.i];if(k){if(!S.known[S.lv+c[0]]){S.known[S.lv+c[0]]=1;S.st.c++}xp(5)}F.i++;F.f=false;render()}
+function run(type,title,items,ctx){Q={type,title,items,ctx,i:0,sc:0,sel:null};V="run";render()}
+function startQuiz(){const w=D[S.lv].v;run("qz","Vocabulary quiz · "+S.lv,shuf(w).map(x=>{const o=shuf([x[1],...shuf(w.filter(y=>y!==x)).slice(0,3).map(y=>y[1])]);return["What does \""+x[0]+"\" mean?",o,o.indexOf(x[1])]}))}
+function startGrammar(){V="lesson";render()}
+function startReading(){const r=D[S.lv].r;run("r","Reading: "+r.t,r.q,r.p)}
+function pick(i){if(Q.sel!==null)return;Q.sel=i;S.st.qa++;if(i===Q.items[Q.i][2]){Q.sc++;S.st.qc++;xp(10);buzz("success")}else buzz("error");save();render()}
+function nextQ(){Q.i++;Q.sel=null;if(Q.i>=Q.items.length){const n=Q.items.length;S.st[Q.type]++;if(Q.type==="g"||Q.type==="r")S.done[S.lv+Q.type]=1;if(Q.sc===n){S.perf=1;xp(20)}S.hist.unshift({t:Q.title,s:Q.sc+"/"+n+" correct",d:day()});S.hist=S.hist.slice(0,10);checkAch();save();V="res"}render()}
+async function sendTutor(){const i=$("ti"),m=i&&i.value.trim();if(!m||busy)return;T.push({r:"u",m});
+if(!AI_ENDPOINT){T.push({r:"s",m:"AI Tutor is not connected yet. Set AI_ENDPOINT in index.html to your own backend."});render();return}
+busy=true;render();
+try{const r=await fetch(AI_ENDPOINT,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({message:m,level:S.lv})});if(!r.ok)throw 0;const d=await r.json();T.push({r:"a",m:String(d.reply||"(empty reply)")})}catch(e){T.push({r:"s",m:"Could not reach the AI service. Please try again."})}
+busy=false;render()}
+function newSpeak(q){const ex=D[S.lv].v.map(x=>x[2]);SP={text:ex[Math.floor(Math.random()*ex.length)],res:null};if(!q)render()}
+function listen(){try{const u=new SpeechSynthesisUtterance(SP.text);u.lang="en-US";speechSynthesis.cancel();speechSynthesis.speak(u)}catch(e){toast("Audio not supported here")}}
+function rec(){const SR=window.SpeechRecognition||window.webkitSpeechRecognition;try{const r=new SR();r.lang="en-US";r.onresult=e=>{$("si").value=e.results[0][0].transcript;toast("Heard you! Tap Check.")};r.onerror=()=>toast("Microphone unavailable. Type instead.");r.start();toast("Listening…")}catch(e){toast("Microphone unavailable. Type instead.")}}
+function checkSpeak(){const v=$("si").value.trim();if(!v){toast("Say or type something first");return}
+const nz=s=>s.toLowerCase().replace(/[^a-z' ]/g,"").split(/\s+/).filter(Boolean),a=nz(SP.text),b=nz(v),miss=a.filter(w=>!b.includes(w)),p=Math.round((a.length-miss.length)/a.length*100);
+SP.res={p,miss};S.st.s++;if(p>=70)xp(5);else{checkAch();save()}render()}
+function resetAll(){const ok=()=>{S=JSON.parse(JSON.stringify(DEF));save();T=[];go("home")};
+if(tg&&tg.showConfirm)tg.showConfirm("Reset all progress?",y=>y&&ok());else if(confirm("Reset all progress?"))ok()}
+
+/* ---------- Render ---------- */
+const NAV=[["home","🏠","Home"],["learn","📚","Learn"],["tutor","💬","Tutor"],["speak","🎤","Speak"],["profile","👤","Profile"]];
+const VW={home,learn,cards,run:runner,res:result,lesson,tutor,speak,profile};
+function render(){try{
+const tab=["cards","run","res","lesson"].includes(V)?"learn":V;
+$("app").innerHTML=(err?`<div class="warn">⚠️ ${esc(err)}</div>`:"")+VW[V]()+`<div class="nav">${NAV.map(n=>`<button class="${n[0]===tab?"on":""}" onclick="go('${n[0]}')"><span>${n[1]}</span>${n[2]}</button>`).join("")}</div>`;
+if(V==="tutor")window.scrollTo(0,document.body.scrollHeight)
+}catch(e){fail(e)}}
+function fail(e){$("app").innerHTML=`<div class="center" style="padding-top:25vh"><div class="big">⚠️</div><h2>Something went wrong</h2><p class="m" style="margin:8px 0">${esc(e&&e.message||e)}</p><button class="btn" onclick="location.reload()">Reload</button></div>`}
+window.addEventListener("error",e=>fail(e.error||e.message));
+setTimeout(()=>{checkAch();render()},600);
+</script>
+</body>
+</html>
